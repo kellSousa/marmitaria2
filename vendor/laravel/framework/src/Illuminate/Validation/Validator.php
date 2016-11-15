@@ -498,9 +498,7 @@ class Validator implements ValidatorContract
             $this->passes();
         }
 
-        return array_diff_key(
-            $this->data, $this->attributesThatHaveMessages()
-        );
+        return array_diff_key($this->data, $this->messages()->toArray());
     }
 
     /**
@@ -514,25 +512,7 @@ class Validator implements ValidatorContract
             $this->passes();
         }
 
-        return array_intersect_key(
-            $this->data, $this->attributesThatHaveMessages()
-        );
-    }
-
-    /**
-     * Generate an array of all attributes that have messages.
-     *
-     * @return array
-     */
-    protected function attributesThatHaveMessages()
-    {
-        $results = [];
-
-        foreach ($this->messages()->toArray() as $key => $message) {
-            $results[] = explode('.', $key)[0];
-        }
-
-        return array_flip(array_unique($results));
+        return array_intersect_key($this->data, $this->messages()->toArray());
     }
 
     /**
@@ -1503,73 +1483,6 @@ class Validator implements ValidatorContract
     {
         return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
     }
-    
-    protected function validateCpf($attribute, $value)
-    {
-        $c = preg_replace('/\D/', '', $value);
-        if (strlen($c) != 11 || preg_match("/^{$c[0]}{11}$/", $c)) {
-            return false;
-        }
-        for ($s = 10, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--);
-        if ($c[9] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
-            return false;
-        }
-        for ($s = 11, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--);
-        if ($c[10] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
-            return false;
-        }
-        return true;
-    }
-
-    protected function validateDddtelefone($attribute, $value)
-    {
-        if (!preg_match("/^\([0-9]{2}\) [0-9]{4}-[0-9]{4}$/", $value)) {
-         return false;
-        }
-        return true;
-    }
-
-    protected function validateDddcelular($attribute, $value)
-    {
-        if (!preg_match("/^\([0-9]{2}\) [0-9]{5}-[0-9]{4}$/", $value)) {
-         return false;
-        }
-        return true;
-    }
-
-    protected function validateCep($attribute, $value)
-    {                
-        if (!preg_match("/^[0-9]{5}-[0-9]{3}$/", $value)) {
-          return false;
-        }
-        return true;
-    }
-
-    protected function validateData($attribute, $value)
-    {
-        if (!preg_match("/^[0-9]{2}/[0-9]{2}/[0-9]{4}$/", $data)) {
-            return false;
-        }
-        return true;
-    }
-
-    protected function validateCnpj($attribute, $value)
-    {
-        $c = preg_replace('/\D/', '', $value);
-        $b = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-        if (strlen($c) != 14) {
-            return false;
-        }
-        for ($i = 0, $n = 0; $i < 12; $n += $c[$i] * $b[++$i]);
-        if ($c[12] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
-            return false;
-        }
-        for ($i = 0, $n = 0; $i <= 12; $n += $c[$i] * $b[$i++]);
-        if ($c[13] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
-            return false;
-        }
-        return true;
-    }
 
     /**
      * Validate that an attribute is a valid URL.
@@ -1807,7 +1720,7 @@ class Validator implements ValidatorContract
      * @param  mixed   $value
      * @return bool
      */
-    protected function validateDate2($attribute, $value)
+    protected function validateDate($attribute, $value)
     {
         if ($value instanceof DateTime) {
             return true;

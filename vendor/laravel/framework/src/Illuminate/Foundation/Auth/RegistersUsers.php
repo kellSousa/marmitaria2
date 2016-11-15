@@ -4,7 +4,6 @@ namespace Illuminate\Foundation\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\NivelUsuario;
 
 trait RegistersUsers
 {
@@ -31,8 +30,7 @@ trait RegistersUsers
             return view($this->registerView);
         }
 
-        $cargos = NivelUsuario::all();
-        return view('auth.register' , ['cargos' => $cargos]);
+        return view('auth.register');
     }
 
     /**
@@ -55,7 +53,7 @@ trait RegistersUsers
     public function register(Request $request)
     {
         $validator = $this->validator($request->all());
-//die($request);
+
         if ($validator->fails()) {
             $this->throwValidationException(
                 $request, $validator

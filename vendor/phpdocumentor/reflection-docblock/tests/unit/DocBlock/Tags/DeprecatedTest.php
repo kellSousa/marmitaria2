@@ -161,6 +161,6 @@ class DeprecatedTest extends \PHPUnit_Framework_TestCase
      */
     public function testFactoryMethodReturnsNullIfBodyDoesNotMatchRegex()
     {
-        $this->assertEquals(new Deprecated(), Deprecated::create('dkhf<'));
+        $this->assertNull(Deprecated::create('dkhf<'));
     }
 }
